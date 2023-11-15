@@ -49,3 +49,83 @@
 - [Soal 20](#soal-20)
 	- [Penyelesaian soal 20](#penyelesaian-soal-20)
 - [Kendala](#Kendala)
+
+## Soal 1
+
+### Penyelesaian soal 1
+
+## Soal 2
+
+### Penyelesaian soal 2
+
+## Soal 3
+
+### Penyelesaian soal 3
+
+## Soal 4
+
+### Penyelesaian soal 4
+
+## Soal 5
+
+### Penyelesaian soal 5
+
+## Soal 6
+
+### Penyelesaian soal 6
+
+## Soal 7
+
+### Penyelesaian soal 7
+
+## Soal 8
+
+### Penyelesaian soal 8
+
+## Soal 9
+
+### Penyelesaian soal 9
+
+## Soal 10
+
+### Penyelesaian soal 10
+
+## Soal 11
+
+### Penyelesaian soal 11
+
+## Soal 12
+
+### Penyelesaian soal 12
+
+## Soal 13
+
+### Penyelesaian soal 13
+
+## Soal 14
+
+### Penyelesaian soal 14
+
+## Soal 15
+
+### Penyelesaian soal 15
+
+## Soal 16
+
+### Penyelesaian soal 16
+
+## Soal 17
+
+### Penyelesaian soal 17
+
+## Soal 18
+
+### Penyelesaian soal 18
+
+## Soal 19
+
+### Penyelesaian soal 19
+
+## Soal 20
+
+### Penyelesaian soal 20
