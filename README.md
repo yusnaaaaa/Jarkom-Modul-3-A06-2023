@@ -8,6 +8,8 @@
 | 5025211254 | Yusna Millaturrosyidah      |
 
 ## Daftar Isi
+- [Topologi](#topologi)
+- [Config](#config)
 - [Soal 1](#soal-1)
 	- [Penyelesaian soal 1](#penyelesaian-soal-1)
 - [Soal 2](#soal-2)
