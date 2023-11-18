@@ -53,6 +53,7 @@
 - [Kendala](#Kendala)
 
 ## Topologi
+<img width="579" alt="topologi modul 3" src="https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/bb389c55-c592-4d7c-a8a4-0585d0638a96">
 
 ## Config
 
