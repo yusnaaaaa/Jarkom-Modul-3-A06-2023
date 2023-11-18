@@ -52,6 +52,10 @@
 	- [Penyelesaian soal 20](#penyelesaian-soal-20)
 - [Kendala](#Kendala)
 
+## Topologi
+
+## Config
+
 ## Soal 1
 
 ### Penyelesaian soal 1
