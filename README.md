@@ -57,28 +57,329 @@
 
 ## Config
 Membuat konfigurasi pada setiap node yang ada sebagai berikut : 
+#### Aura (DHCP Relay)
+```
+auto eth0
+iface eth0 inet dhcp
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 10.2.0.0/16
 
+auto eth1
+iface eth1 inet static
+	address 10.2.1.11
+	netmask 255.255.255.0
 
+auto eth2
+iface eth2 inet static
+	address 10.2.2.11
+	netmask 255.255.255.0
+
+auto eth3
+iface eth3 inet static
+	address 10.2.3.11
+	netmask 255.255.255.0
+
+auto eth4
+iface eth4 inet static
+	address 10.2.4.11
+	netmask 255.255.255.0
+```
+
+#### Himmel (DHCP Server)
+```
+auto eth0
+iface eth0 inet static
+	address 10.2.1.2
+	netmask 255.255.255.0
+	gateway 10.2.1.11
+```
+
+#### Heiter (DNS Server)
+```
+auto eth0
+iface eth0 inet static
+	address 10.2.1.3
+	netmask 255.255.255.0
+	gateway 10.2.1.11
+```
+
+#### Denken (Database Server)
+```
+auto eth0
+iface eth0 inet static
+	address 10.2.2.2
+	netmask 255.255.255.0
+	gateway 10.2.2.11
+```
+
+#### Eisen (Load Balancer)
+```
+auto eth0
+iface eth0 inet static
+	address 10.2.2.3
+	netmask 255.255.255.0
+	gateway 10.2.2.11
+```
+
+#### Laravel Worker
+Frieren
+```
+auto eth0
+iface eth0 inet dhcp
+hwaddress ether 7a:6d:c7:77:9b:fb
+```
+
+Flamme
+```
+auto eth0
+iface eth0 inet dhcp
+hwaddress ether 3e:26:cc:9e:a3:1e
+```
+
+Fern
+```
+auto eth0
+iface eth0 inet dhcp
+hwaddress ether 82:69:33:8f:d8:e1
+```
+
+#### PHP Worker
+Lawine
+```
+auto eth0
+iface eth0 inet dhcp
+hwaddress ether 02:0f:9c:37:c7:60
+```
+
+Linie
+```
+auto eth0
+iface eth0 inet dhcp
+hwaddress ether aa:f6:88:e0:1c:73
+```
+
+Lugner
+```
+auto eth0
+iface eth0 inet dhcp
+hwaddress ether aa:d4:14:04:41:9d
+```
+
+#### Client
+Sein, Stark, Revolte, Richter
+```
+auto eth0
+iface eth0 inet dhcp
+```
 
 ## Soal 1
+Setelah mengalahkan Demon King, perjalanan berlanjut. Kali ini, kalian diminta untuk melakukan register domain berupa riegel.canyon.yyy.com untuk worker Laravel dan granz.channel.yyy.com untuk worker PHP (0) mengarah pada worker yang memiliki IP [prefix IP].x.1.
+Lakukan konfigurasi sesuai dengan peta yang sudah diberikan.
 
 ### Penyelesaian soal 1
+Lakukan konfigurasi pada Heiter (DNS Server), tambahkan command seperti dibawah ini : 
+
+```
+echo nameserver 192.168.122.1 > etc/resolv.conf
+ 
+apt-get update
+
+apt-get install bind9 -y
+
+mkdir /etc/bind/jarkom
+
+echo ‘
+# Mendefinisikan Domain
+
+zone "riegel.canyon.A06.com" {
+type master;
+file "/etc/bind/jarkom/riegel.canyon.A06.com";
+};
+zone "granz.channel.A06.com" {
+type master;
+file "/etc/bind/jarkom/granz.channel.A06.com";
+};
+zone "1.2.10.in-addr.arpa" {
+type master;
+file "/etc/bind/sites/1.2.10.in-addr.arpa";
+};
+‘ > /etc/bind/named.conf.local
+
+cp named.conf.local /etc/bind/
+
+cp /etc/bind/db.local /etc/bind/jarkom/riegel.canyon.A06.com
+
+cp /etc/bind/db.local /etc/bind/jarkom/granz.channel.A06.com
+
+echo ‘
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     riegel.canyon.A06.com. root.riegel.canyon.A06.com. (
+         2		      	; Serial
+         604800         	; Refresh
+         86400         	; Retry
+         2419200         	; Expire
+        604800 )       ; Negative Cache TTL
+;
+@       IN      NS     	    riegel.canyon.A06.com.
+@       IN      A       	    10.2.2.3 	
+www   IN      CNAME       riegel.canyon.A06.com.
+‘ > /etc/bind/jarkom/riegel.canyon.A06.com
+
+echo ‘
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     granz.channel.A06.com. root.granz.channel.A06.com. (
+         2		      	; Serial
+         604800         	; Refresh
+         86400         	; Retry
+         2419200         	; Expire
+        604800 )       ; Negative Cache TTL
+;
+@       IN      NS     	    granzchannel.A06.com.
+@       IN      A       	    10.2.2.3
+www   IN      CNAME       granz.channel.A06.com.
+‘ > /etc/bind/jarkom/granz.channel.A06.com
+
+service bind9 restart
+
+```
+
+#### Hasil
+<img width="456" alt="no1" src="https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/22863898-7078-4bb7-8439-64f34a8a68a4">
 
 ## Soal 2
+Client yang melalui Switch3 mendapatkan range IP dari [prefix IP].3.16 - [prefix IP].3.32 dan [prefix IP].3.64 - [prefix IP].3.80
 
 ### Penyelesaian soal 2
+Pertama yaitu melakukan konfigurasi pada DHCP Relay sebagai berikut : 
+```
+echo '
+SERVER="10.2.1.2"
+INTERFACES="eth1 eth2 eth3 eth4"
+' > /etc/default/isc-dhcp-relay
+
+echo '
+net.ipv4.ip_forward=1
+' > /etc/sysctl.conf
+
+service isc-dhcp-relay start
+```
+
+Kemudian, lakukan konfigurasi juga pada DHCP Server sebagai berikut : 
+```
+echo '
+INTERFACESv4="eth0"
+INTERFACESv6=""
+' > /etc/default/isc-dhcp-server
+
+echo '
+subnet 10.2.1.0 netmask 255.255.255.0 {
+}
+
+subnet 10.2.2.0 netmask 255.255.255.0 {
+}
+
+subnet 10.2.3.0 netmask 255.255.255.0 {
+    range 10.2.3.16 10.2.3.32;
+    range 10.2.3.64 10.2.3.80;
+    option routers 10.2.3.11;
+    option broadcast-address 10.2.3.255;
+    option domain-name-servers 10.2.1.3;
+}
+' > etc/dhcp/dhcpd.conf
+
+```
 
 ## Soal 3
+Client yang melalui Switch4 mendapatkan range IP dari [prefix IP].4.12 - [prefix IP].4.20 dan [prefix IP].4.160 - [prefix IP].4.168
 
 ### Penyelesaian soal 3
+Tambahkan konfigurasi pada file `/etc/dhcp/dhcpd.conf` pada DHCP Server sebagai berikut : 
+```
+echo '
+subnet 10.2.4.0 netmask 255.255.255.0 {
+    range 10.2.4.12 10.2.4.32;
+    range 10.2.4.160 10.2.4.168;
+    option routers 10.2.4.11;
+    option broadcast-address 10.2.4.255;
+    option domain-name-servers 10.2.1.3;
+}
+' >> /etc/dhcp/dhcpd.conf
+
+service isc-dhcp-server restart
+```
 
 ## Soal 4
+Client mendapatkan DNS dari Heiter dan dapat terhubung dengan internet melalui DNS tersebut
 
 ### Penyelesaian soal 4
+Menambahkan forwarders pada file konfig /etc/bind/named.conf.options, untuk menentukan server DNS eksternal yang akan digunakan sebagai forwarders oleh server BIND9.
+```
+echo ‘
+options {
+        directory "/var/cache/bind";
+
+        forwarders {
+                192.168.122.1;
+        };
+
+      // dnssec-validation auto;
+        allow-query{any;};
+        auth-nxdomain no;
+        listen-on-v6 { any; };
+};
+‘ > /etc/bind/named.conf.local
+
+Service bind9 restart
+```
 
 ## Soal 5
+Lama waktu DHCP server meminjamkan alamat IP kepada Client yang melalui Switch3 selama 3 menit sedangkan pada client yang melalui Switch4 selama 12 menit. Dengan waktu maksimal dialokasikan untuk peminjaman alamat IP selama 96 menit 
 
 ### Penyelesaian soal 5
+Untuk mengatasi kebutuhan leasing time yang berbeda antara Switch3 dan Switch4 dalam jaringan, kita akan menggunakan fungsi default-lease-time dan max-lease-time pada server DHCP. Pada Switch3, durasi peminjaman IP selama 3 menit maka akan diatur menjadi 180 detik, sedangkan pada Switch4, durasi peminjaman IP selama 12 menit maka durasinya akan menjadi 720 detik. Selain itu, max-lease-time akan diatur ke 5760 detik untuk memastikan batasan waktu peminjaman IP tidak melebihi 96 menit.
+```
+echo ‘
+subnet 10.2.1.0 netmask 255.255.255.0 {
+}
+
+subnet 10.2.2.0 netmask 255.255.255.0 {
+}
+
+subnet 10.2.3.0 netmask 255.255.255.0 {
+    range 10.2.3.16 10.2.3.32;
+    range 10.2.3.64 10.2.3.80;
+    option routers 10.2.3.11;
+    option broadcast-address 10.2.3.255;
+    option domain-name-servers 10.2.1.3;
+    default-lease-time 180;
+    max-lease-time 5760;
+}
+
+subnet 10.2.4.0 netmask 255.255.255.0 {
+    range 10.2.4.12 10.2.4.32;
+    range 10.2.4.160 10.2.4.168;
+    option routers 10.2.4.11;
+    option broadcast-address 10.2.4.255;
+    option domain-name-servers 10.2.1.3;
+    default-lease-time 720;
+    max-lease-time 5760;
+}
+‘ > /etc/dhcp/dhcpd.conf
+
+service isc-dhcp-server restart
+```
+
+#### Hasil 
+- IP DHCP pada Client dengan Switch 3
+<img width="436" alt="dhcp switch3" src="https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/ef5833a3-d38b-4dca-bf9d-f5b71392410d">
+
+- IP DHCP pada Client dengan Switch 4
+<img width="410" alt="dhcp switch 4" src="https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/59494ea5-2b77-4a54-ae46-ca5ba04fc070">
 
 ## Soal 6
 
