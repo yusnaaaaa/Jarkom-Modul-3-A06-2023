@@ -682,39 +682,53 @@ Maka akan muncul tampilan seperti dibawah ini :
 ![Screenshot (2894)](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/2ec54699-4014-48f0-84d8-09675a1085f1)
 
 
-
 ## Soal 12
+Selanjutnya LB ini hanya boleh diakses oleh client dengan IP [Prefix IP].3.69, [Prefix IP].3.70, [Prefix IP].4.167, dan [Prefix IP].4.168. (12) hint: (fixed in dulu clinetnya)
 
 ### Penyelesaian soal 12
 
 ## Soal 13
+Semua data yang diperlukan, diatur pada Denken dan harus dapat diakses oleh Frieren, Flamme, dan Fern. 
 
 ### Penyelesaian soal 13
 
 ## Soal 14
+Frieren, Flamme, dan Fern memiliki Riegel Channel sesuai dengan quest guide berikut. Jangan lupa melakukan instalasi PHP8.0 dan Composer
 
 ### Penyelesaian soal 14
 
 ## Soal 15
+Riegel Channel memiliki beberapa endpoint yang harus ditesting sebanyak 100 request dengan 10 request/second. Tambahkan response dan hasil testing pada grimoire.
+a. POST /auth/register
 
 ### Penyelesaian soal 15
 
 ## Soal 16
+b. POST /auth/login
 
 ### Penyelesaian soal 16
 
 ## Soal 17
+c. GET /me
 
 ### Penyelesaian soal 17
 
 ## Soal 18
+Untuk memastikan ketiganya bekerja sama secara adil untuk mengatur Riegel Channel maka implementasikan Proxy Bind pada Eisen untuk mengaitkan IP dari Frieren, Flamme, dan Fern.
 
 ### Penyelesaian soal 18
 
 ## Soal 19
+Untuk meningkatkan performa dari Worker, coba implementasikan PHP-FPM pada Frieren, Flamme, dan Fern. Untuk testing kinerja naikkan 
+- pm.max_children
+- pm.start_servers
+- pm.min_spare_servers
+- pm.max_spare_servers
+sebanyak tiga percobaan dan lakukan testing sebanyak 100 request dengan 10 request/second kemudian berikan hasil analisisnya pada Grimoire.
 
 ### Penyelesaian soal 19
 
 ## Soal 20
+Nampaknya hanya menggunakan PHP-FPM tidak cukup untuk meningkatkan performa dari worker maka implementasikan Least-Conn pada Eisen. Untuk testing kinerja dari worker tersebut dilakukan sebanyak 100 request dengan 10 request/second.
 
 ### Penyelesaian soal 20
