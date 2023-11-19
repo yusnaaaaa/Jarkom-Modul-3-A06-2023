@@ -629,13 +629,13 @@ auth_basic_user_file /etc/nginx/rahasisakita/htpasswd;
 
 Setelah itu kita dapat kembali menjalankan url `http://www.granz.channel.A06.com/` dan akan muncul tampilan seperti dibawah ini : 
 
-![Screenshot (2884)](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/2342ad2a-d7b1-4f04-8c13-9c5c25950cde)
+![pass1](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/efefe4bd-4911-4f69-ab4d-4517785666cd)
 
-![Screenshot (2885)](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/becb9b3a-6d4f-4c2f-a31f-a640fe6b515d)
+![pass2](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/64667e1b-98f5-46ae-98af-16c4e826fdd2)
 
-![Screenshot (2886)](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/ef74cbe1-992b-4c71-a3f5-521d63f8daac)
+![pass3](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/301f5952-4169-4244-9fad-d33c846718e3)
 
-![Screenshot (2883)](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/3602b276-b9c3-46e2-aa9a-62d8eb4be87e)
+![pass4](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/7872cfc2-89d0-447c-8f5c-5fd399ea9761)
 
 ## Soal 11
 
@@ -679,8 +679,7 @@ lynx www.granz.channel.A06.com/its
 ```
 Maka akan muncul tampilan seperti dibawah ini : 
 
-![Screenshot (2894)](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/2ec54699-4014-48f0-84d8-09675a1085f1)
-
+![no11](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/3d917931-ac39-440b-80d8-5b2cb0a2f7a0)
 
 ## Soal 12
 Selanjutnya LB ini hanya boleh diakses oleh client dengan IP [Prefix IP].3.69, [Prefix IP].3.70, [Prefix IP].4.167, dan [Prefix IP].4.168. (12) hint: (fixed in dulu clinetnya)
