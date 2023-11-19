@@ -686,6 +686,66 @@ Maka akan muncul tampilan seperti dibawah ini :
 Selanjutnya LB ini hanya boleh diakses oleh client dengan IP [Prefix IP].3.69, [Prefix IP].3.70, [Prefix IP].4.167, dan [Prefix IP].4.168. (12) hint: (fixed in dulu clinetnya)
 
 ### Penyelesaian soal 12
+Tambahkan konfigurasi pada nginx seperti dibawah ini  : 
+```
+echo '
+upstream worker {
+    server 10.2.3.1;
+    server 10.2.3.2;
+    server 10.2.3.3;
+}
+
+server {
+    listen 80;
+    server_name granz.channel.A06.com www.granz.channel.A06.com;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    location / {
+        allow 10.2.3.69;
+        allow 10.2.3.70;
+        allow 10.2.4.167;
+        allow 10.2.4.168;
+        deny all;
+        proxy_pass http://worker;
+    }
+
+    location /its {
+        proxy_pass https://www.its.ac.id;
+        proxy_set_header Host www.its.ac.id;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+' > /etc/nginx/sites-available/lb_php
+```
+Dalam hal ini, hanya beberapa alamat IP tertentu yang diizinkan, sesuai dengan ketentuan yang telah ditetapkan. Semua alamat IP selain yang telah ditentukan akan ditolak. Untuk testing, kita dapat membuka klien yang diberikan alamat IP sebagai berikut : 
+ 10.2.3.69;
+ 10.2.3.70;
+ 10.2.4.167;
+ 10.2.4.168;
+
+#### Hasil : 
+- IP Deny
+  <img width="960" alt="no12" src="https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/b7fa3b15-72ed-4c17-98fd-5646a1ac0ed2">
+  
+- IP Allow
+Dalam konteks pengaturan yang telah ada, yang membatasi akses hanya kepada beberapa alamat IP tertentu, kita ingin menambahkan izin akses untuk alamat IP 10.2.3.20.
+```
+location / {
+    allow 10.2.3.20;
+    allow 10.2.3.69;
+    allow 10.2.3.70;
+    allow 10.2.4.167;
+    allow 10.2.4.168;
+    deny all;
+    proxy_pass http://worker;
+}
+```
+Setelah berhasil, maka akan muncul tampilan seperti dibawah ini : 
+<img width="960" alt="no12allow" src="https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/b8f19a2a-05f2-41b3-8a77-99be7c7b9dcf">
 
 ## Soal 13
 Semua data yang diperlukan, diatur pada Denken dan harus dapat diakses oleh Frieren, Flamme, dan Fern. 
