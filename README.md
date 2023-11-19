@@ -382,8 +382,65 @@ service isc-dhcp-server restart
 <img width="410" alt="dhcp switch 4" src="https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/59494ea5-2b77-4a54-ae46-ca5ba04fc070">
 
 ## Soal 6
+Pada masing-masing worker PHP, lakukan konfigurasi virtual host untuk website berikut dengan menggunakan php 7.3.
 
 ### Penyelesaian soal 6
+Pertama yaitu lakukan instalasi dependencies yang dibutuhkan sebagai berikut : 
+#### Pada semua Client
+```
+apt update
+apt install lynx -y
+apt install htop -y
+apt install apache2-utils -y
+apt install nginx -y
+```
+
+#### Pada semua PHP Worker
+```
+apt update
+apt install nginx -y
+service nginx start
+apt-get install php php-fpm -y
+```
+Kemudian lakukan konfigurasi tambahan sebagai berikut untuk melakukan git clone pada file yang telah disediakan, sebelum itu silahkan masuk ke dalam directory `/var/www` didalam worker. kemudian lakukan command seperti dibawah ini : 
+```
+apt install git
+git clone -b granz https://github.com/yusnaaaaa/JarkomPrak3-Dependencies
+mv JarkomPrak3-Dependencies /var/www/granz.channel.A06.com
+```
+
+Lalu lakukan konfigurasi pada nginx seperti dibawah ini : 
+```
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/granz.channel.A06.com
+ln -s /etc/nginx/sites-available/granz.channel.A06.com /etc/nginx/sites-enabled/
+rm /etc/nginx/sites-enabled/default
+
+echo 'server {
+    listen 80;
+    server_name _;
+
+    root /var/www/granz.channel.A06.com;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php7.3-fpm.sock;  # Sesuaikan versi PHP dan socket
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}' > /etc/nginx/sites-available/granz.channel.A06.com
+
+service nginx restart
+```
+Setelah itu coba cek pada client dengan menggunakan command `lynx granz.channel.A06.com`
+
+Apabila berhasil maka akan muncul tampilan seperti dibawah ini : 
+<img width="960" alt="no 6" src="https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/5b8e0cff-251d-4466-985e-50995ac0996e">
+
 
 ## Soal 7
 
