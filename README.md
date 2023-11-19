@@ -633,7 +633,7 @@ Setelah itu kita dapat kembali menjalankan url `http://www.granz.channel.A06.com
 
 ![pass2](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/64667e1b-98f5-46ae-98af-16c4e826fdd2)
 
-![pass3](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/301f5952-4169-4244-9fad-d33c846718e3)
+![pass5](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/592b8b0b-7236-4640-ba88-44332a95c3a3)
 
 ![pass4](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/7872cfc2-89d0-447c-8f5c-5fd399ea9761)
 
