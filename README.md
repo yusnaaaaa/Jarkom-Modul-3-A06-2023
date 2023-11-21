@@ -1024,11 +1024,51 @@ Apabila telah berhasil akan muncul tampilan sebagai berikut :
 c. GET /me
 
 ### Penyelesaian soal 17
+```
+curl -H "Authorization: Bearer [token]" http://riegel.canyon.A06.com/api/me
+```
+
+Ketika telah berhasil akan muncul tampilan sebagai berikut : 
+
+![17curl](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/3f6fa0e6-2cde-4308-b675-096ca4d3da4a)
+
+Setelah itu jalankan dengan Apache benchmark seperti dibawah ini :
+```
+ab -n 100 -c 10 -p <(curl -H "Authorization: Bearer [token]" http://riegel.canyon.A06.com/api/me
+) -T "application/json" http://riegel.canyon.A06.com/api/me
+```
+Apabila telah berhasil akan muncul tampilan sebagai berikut : 
+
+![17apcautho-awal](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/6d8509b6-0b6b-4089-a77b-27babba36c12) </br>
+
+![17apcautho-akhir](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/60ada0c9-9267-4b45-8990-36d85f3ebec1)
 
 ## Soal 18
 Untuk memastikan ketiganya bekerja sama secara adil untuk mengatur Riegel Channel maka implementasikan Proxy Bind pada Eisen untuk mengaitkan IP dari Frieren, Flamme, dan Fern.
 
 ### Penyelesaian soal 18
+Untuk menyelesaikan soal ini menggunakan Proxy Bind pada Eisen (Load Balancer) untuk menghubungkan IP Worker Laravel dengan IP Load Balancer, maka akan ditambahkan script seperti dibawah ini : 
+```
+ location /frieren {
+        proxy_bind 10.2.2.3;	
+        proxy_pass http://10.2.4.1/index.php;
+ 
+    }
+
+    location /flamme {
+	proxy_bind 10.2.2.3;
+        proxy_pass http://10.2.4.2/index.php;
+       
+    }
+
+    location /fern {
+	proxy_bind 10.2.2.3;
+        proxy_pass http://10.2.4.3/index.php;
+	}
+```
+Kemudian lakukan `service nginx restart`
+Setelah itu kita dapat melakukan testing pada client dengan command `lynx http://[ip lb]/[nama node worker laravel]/`, maka akan muncul tampilan hasil seperti dibawah ini : </br>
+![18](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/8f96cbda-6bf3-46c8-abe2-1035d6ec81ed)
 
 ## Soal 19
 Untuk meningkatkan performa dari Worker, coba implementasikan PHP-FPM pada Frieren, Flamme, dan Fern. Untuk testing kinerja naikkan 
@@ -1039,8 +1079,110 @@ Untuk meningkatkan performa dari Worker, coba implementasikan PHP-FPM pada Frier
 sebanyak tiga percobaan dan lakukan testing sebanyak 100 request dengan 10 request/second kemudian berikan hasil analisisnya pada Grimoire.
 
 ### Penyelesaian soal 19
+Konfigurasi PHP-FPM untuk mengelola pekerja PHP pada setiap worker melibatkan beberapa parameter utama:
+
+pm.max_children: Menentukan jumlah maksimum pekerja PHP yang dapat berjalan bersamaan. Harus disesuaikan dengan kapasitas sumber daya server agar tidak terlalu rendah atau tinggi, menghindari kelebihan beban atau kekurangan sumber daya.
+pm.start_servers: Menentukan jumlah pekerja PHP yang akan dimulai otomatis ketika PHP-FPM pertama kali dijalankan atau direstart. Berguna untuk mengoptimalkan performa pada saat server pertama kali dimulai.
+pm.min_spare_servers: Menentukan jumlah minimum pekerja PHP yang tetap berjalan saat server berjalan. Mempertahankan responsivitas server bahkan saat lalu lintas rendah.
+pm.max_spare_servers: Menentukan jumlah maksimum pekerja PHP yang berjalan tetapi tidak menangani permintaan. Disesuaikan dengan kebutuhan untuk menangani lonjakan lalu lintas tanpa menambahkan terlalu banyak sumber daya saat beban rendah.
+
+Pertama yaitu jalankan command pada worker Laravel seperti dibawah ini : 
+```
+echo ‘
+user = eisen_user
+group = eisen_user
+listen = /var/run/php8.0-fpm-eisen-site.sock
+listen.owner = www-data
+listen.group = www-data
+php_admin_value[disable_functions] = exec,passthru,shell_exec,system
+php_admin_flag[allow_url_fopen] = off
+
+pm = dynamic
+pm.max_children = 75
+pm.start_servers = 10
+pm.min_spare_servers = 5
+pm.max_spare_servers = 20
+pm.process_idle_timeout = 10s
+’ > /etc/php/8.0/fpm/pool.d/eisen.conf
+
+groupadd eisen_user
+useradd -g eisen_user eisen_user
+```
+
+Kemudian ubah beberapa konfigurasi socker php-fpm sebagai berikut : 
+```
+location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+        #
+        #       # With php-fpm (or other unix sockets):
+                fastcgi_pass unix:/var/run/php8.0-fpm-eisen-site.sock;
+        #       # With php-cgi (or other tcp sockets):
+        #       fastcgi_pass 127.0.0.1:9000;
+}
+```
+
+Lalu, jalankan command dibawah ini : 
+```
+service php8.0-fpm start
+service nginx restart
+```
+
+Setelah itu kita dapat melakukan testing dengan 3 konfigurasi yang berbeda sesuai dengan yang diperintahkan. Maka, ada 3 hasil sebagai berikut : 
+- Hasil 1
+```
+pm = dynamic
+pm.max_children = 75
+pm.start_servers = 10
+pm.min_spare_servers = 5
+pm.max_spare_servers = 20
+pm.process_idle_timeout = 10s
+```
+![19hasil1-awal](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/ab390338-b8cc-4af6-866f-ebc3834dc13b) </br>
+
+![19hasil1-akhir](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/4852f912-03e1-4968-ba68-449a6421ef4d) </br>
+
+- Hasil 2
+```
+pm = dynamic
+pm.max_children = 35
+pm.start_servers = 5
+pm.min_spare_servers = 1
+pm.max_spare_servers = 5
+pm.process_idle_timeout = 6s
+```
+![19hasil2-awal](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/7f0e5be3-e3d1-47b8-844f-f6f6eb4a65d7) </br>
+
+![19hasil2-akhir](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/c8b4e911-a714-4bb5-b7cd-722a08449842) </br>
+
+- Hasil 3
+```
+pm = dynamic
+pm.max_children = 45
+pm.start_servers = 2
+pm.min_spare_servers = 3
+pm.max_spare_servers = 15
+pm.process_idle_timeout = 8s
+```
+![19hasil3-awal](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/5b194bfe-a9bb-43b1-a53f-49f59668397e)</br>
+
+![19hasil3-akhir](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/b69d6b0a-a161-470f-8754-4f60c2a06e6a) </br>
 
 ## Soal 20
 Nampaknya hanya menggunakan PHP-FPM tidak cukup untuk meningkatkan performa dari worker maka implementasikan Least-Conn pada Eisen. Untuk testing kinerja dari worker tersebut dilakukan sebanyak 100 request dengan 10 request/second.
 
 ### Penyelesaian soal 20
+Pertama yaitu kita harus mengubah konfigurasi pada node Eisen (Load Balancer) sebagai berikut : 
+```
+upstream laravel {
+    least_conn;
+    server 10.2.4.1;
+    server 10.2.4.2;
+    server 10.2.4.3;
+}
+```
+Setelah berhasil maka akan muncul tampilan seperti dibawah ini : 
+
+![20awal](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/0ac598c7-16e3-43ef-8361-428a4a085afc) </br>
+
+![20akhir](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/91377793/5dd177a6-48be-4bc7-8ab4-59c332b0d400) </br>
+
