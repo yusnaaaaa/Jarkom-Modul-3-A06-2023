@@ -33,7 +33,7 @@
 - [Soal 11](#soal-11)
 	- [Penyelesaian soal 11](#penyelesaian-soal-11)
 - [Soal 12](#soal-12)
-	- [Penyelesaian soal 12](#penyelesaian-soal-2)
+	- [Penyelesaian soal 12](#penyelesaian-soal-12)
 - [Soal 13](#soal-13)
 	- [Penyelesaian soal 13](#penyelesaian-soal-13)
 - [Soal 14](#soal-14)
