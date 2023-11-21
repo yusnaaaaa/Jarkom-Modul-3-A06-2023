@@ -1081,10 +1081,10 @@ sebanyak tiga percobaan dan lakukan testing sebanyak 100 request dengan 10 reque
 ### Penyelesaian soal 19
 Konfigurasi PHP-FPM untuk mengelola pekerja PHP pada setiap worker melibatkan beberapa parameter utama:
 
-pm.max_children: Menentukan jumlah maksimum pekerja PHP yang dapat berjalan bersamaan. Harus disesuaikan dengan kapasitas sumber daya server agar tidak terlalu rendah atau tinggi, menghindari kelebihan beban atau kekurangan sumber daya.
-pm.start_servers: Menentukan jumlah pekerja PHP yang akan dimulai otomatis ketika PHP-FPM pertama kali dijalankan atau direstart. Berguna untuk mengoptimalkan performa pada saat server pertama kali dimulai.
-pm.min_spare_servers: Menentukan jumlah minimum pekerja PHP yang tetap berjalan saat server berjalan. Mempertahankan responsivitas server bahkan saat lalu lintas rendah.
-pm.max_spare_servers: Menentukan jumlah maksimum pekerja PHP yang berjalan tetapi tidak menangani permintaan. Disesuaikan dengan kebutuhan untuk menangani lonjakan lalu lintas tanpa menambahkan terlalu banyak sumber daya saat beban rendah.
+1. pm.max_children: Menentukan jumlah maksimum pekerja PHP yang dapat berjalan bersamaan. Harus disesuaikan dengan kapasitas sumber daya server agar tidak terlalu rendah atau tinggi, menghindari kelebihan beban atau kekurangan sumber daya.</br>
+2. pm.start_servers: Menentukan jumlah pekerja PHP yang akan dimulai otomatis ketika PHP-FPM pertama kali dijalankan atau direstart. Berguna untuk mengoptimalkan performa pada saat server pertama kali dimulai.</br>
+3. pm.min_spare_servers: Menentukan jumlah minimum pekerja PHP yang tetap berjalan saat server berjalan. Mempertahankan responsivitas server bahkan saat lalu lintas rendah.</br>
+4. pm.max_spare_servers: Menentukan jumlah maksimum pekerja PHP yang berjalan tetapi tidak menangani permintaan. Disesuaikan dengan kebutuhan untuk menangani lonjakan lalu lintas tanpa menambahkan terlalu banyak sumber daya saat beban rendah.</br>
 
 Pertama yaitu jalankan command pada worker Laravel seperti dibawah ini : 
 ```
@@ -1109,7 +1109,7 @@ groupadd eisen_user
 useradd -g eisen_user eisen_user
 ```
 
-Kemudian ubah beberapa konfigurasi socker php-fpm sebagai berikut : 
+Kemudian ubah beberapa konfigurasi socket php-fpm sebagai berikut : 
 ```
 location ~ \.php$ {
                 include snippets/fastcgi-php.conf;
