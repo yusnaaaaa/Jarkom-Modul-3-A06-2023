@@ -751,10 +751,161 @@ Semua data yang diperlukan, diatur pada Denken dan harus dapat diakses oleh Frie
 
 ### Penyelesaian soal 13
 
+Pertama yaitu lakukan instalasi dependencies yang dibutuhkan sebagai berikut : 
+```
+echo 'nameserver 10.2.1.3' > /etc/resolv.conf
+apt-get update
+apt-get install mariadb-server -y
+service mysql start
+```
+
+Lalu masuk ke node Denken (Database Server) untuk melakukan konfigurasi seperti dibawah ini : 
+```
+echo '
+# This group is read both by the client and the server
+# use it for options that affect everything
+[client-server]
+
+# Import all .cnf files from configuration directory
+!includedir /etc/mysql/conf.d/
+!includedir /etc/mysql/mariadb.conf.d/
+
+# Options affecting the MySQL server (mysqld)
+[mysqld]
+skip-networking=0
+skip-bind-address
+' > /etc/mysql/my.cnf
+```
+Kemudian ganti [bind-address] pada /etc/mysql/mariadb.conf.d/50-server.cnf menjadi 0.0.0.0 seperti dibawah ini : 
+```
+cd /etc/mysql/mariadb.conf.d/50-server.cnf
+
+# Changes
+bind-address            = 0.0.0.0
+```
+Kemudian jalankan script dibwah ini : 
+```
+mysql -u root -p
+Enter password:
+
+CREATE USER 'kelompokA06'@'10.2.4.1' IDENTIFIED BY 'passwordA06';
+CREATE USER 'kelompokA06'@'10.2.4.2' IDENTIFIED BY 'passwordA06';
+CREATE USER 'kelompokA06'@'10.2.4.3' IDENTIFIED BY 'passwordA06';
+CREATE USER 'kelompokA06'@'localhost' IDENTIFIED BY 'passwordA06';
+CREATE DATABASE dbkelompokA06;
+
+GRANT ALL PRIVILEGES ON *.* TO 'kelompokA06'@'10.2.4.1';
+GRANT ALL PRIVILEGES ON *.* TO 'kelompokA06'@'10.2.4.2';
+GRANT ALL PRIVILEGES ON *.* TO 'kelompokA06'@'10.2.4.3';
+GRANT ALL PRIVILEGES ON *.* TO 'kelompokA06'@'localhost';
+
+FLUSH PRIVILEGES;
+```
+
+Lalu, kita dapat melakukan testing pada salah satu Laravel Worker dengan perintah seperti dibawah ini : 
+```
+mariadb --host=10.2.2.2 --port=3306 --user=kelompokA06 --password=passwordA06 dbkelompokA06 -e "SHOW DATABASES;"
+```
+Setelah berhasil maka akan muncul tampilan seperti dibawah ini :
+
+<img width="960" alt="no13" src="https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/2d78c238-284f-4550-8d5b-5fec904a2538">
+
 ## Soal 14
 Frieren, Flamme, dan Fern memiliki Riegel Channel sesuai dengan quest guide berikut. Jangan lupa melakukan instalasi PHP8.0 dan Composer
 
 ### Penyelesaian soal 14
+
+Pertama yaitu melakukan instalasi dependencies yang dibutuhkan pada semua worker sebagai berikut : 
+```
+apt-get update
+apt-get install -y lsb-release ca-certificates apt-transport-https
+software-properties-common gnupg2
+curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
+sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
+apt-get update
+apt-get install php8.0-mbstring php8.0-xml php8.0-cli php8.0-common php8.0-intl php8.0-opcache php8.0-readline php8.0-mysql php8.0-fpm php8.0-curl unzip wget -y
+apt-get install nginx -y
+wget https://getcomposer.org/download/2.0.13/composer.phar
+chmod +x composer.phar
+mv composer.phar /usr/bin/composer
+apt-get install git -y
+git clone https://github.com/martuafernando/laravel-praktikum-jarkom
+mv laravel-praktikum-jarkom /var/www/
+```
+
+Kemudian jalankan beberapa command berikut di file Laravel : 
+```
+Composer update
+composer install
+cp .env.example .env
+php artisan migrate:fresh
+php artisan db:seed --class=AiringsTableSeeder
+php artisan key:generate
+php artisan jwt:secret
+```
+
+Setelah itu lakukan konfigurasi pada file .env yang baru sebagai berikut : 
+```
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+LOG_CHANNEL=stack
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
+
+DB_CONNECTION=mysql
+DB_HOST=10.2.2.2
+DB_PORT=3306
+DB_DATABASE=dbkelompokA06
+DB_USERNAME=kelompokA06
+DB_PASSWORD=passwordA06
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+PUSHER_APP_CLUSTER=mt1
+
+VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+VITE_PUSHER_HOST="${PUSHER_HOST}"
+VITE_PUSHER_PORT="${PUSHER_PORT}"
+VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+```
+
 
 ## Soal 15
 Riegel Channel memiliki beberapa endpoint yang harus ditesting sebanyak 100 request dengan 10 request/second. Tambahkan response dan hasil testing pada grimoire.
@@ -762,10 +913,112 @@ a. POST /auth/register
 
 ### Penyelesaian soal 15
 
+Pertama yaitu jalankan command pada semua worker sebagai berikut :
+```
+echo ‘
+server {
+
+    listen 80;
+
+    root /var/www/laravel-praktikum-jarkom/public;
+
+    index index.php index.html index.htm;
+    server_name riegel.canyon.A06.com;
+
+    location / {
+            try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # pass PHP scripts to FastCGI server
+    location ~ \.php$ {
+    include snippets/fastcgi-php.conf;
+    fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+    }
+
+location ~ /\.ht {
+            deny all;
+    }
+
+    error_log /var/log/nginx/implementasi_error.log;
+    access_log /var/log/nginx/implementasi_access.log;
+}’ > /etc/nginx/sites-available/implementasi
+unlink /etc/nginx/sites-enabled/default
+ln -s /etc/nginx/sites-available/implementasi /etc/nginx/sites-enabled/default
+chown -R www-data.www-data /var/www/laravel-praktikum-jarkom/storage
+service php8.0-fpm start
+```
+
+Lalu jalankan command pada node Eisen (Load Balancer) sebagai berikut : 
+```
+echo ‘
+upstream laravel {
+	server 10.2.4.1;
+	server 10.2.4.2;
+	server 10.2.4.3;
+}
+
+server {
+	listen 80;
+	server_name riegel.canyon.A06.com;
+		location / {
+                proxy_pass http://laravel;
+                proxy_set_header    X-Real-IP $remote_addr;
+                proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header    Host $http_host;
+        }
+	error_log /var/log/nginx/lb_error.log;
+access_log /var/log/nginx/lb_access.log;
+}
+’ > /etc/nginx/sites-available/lb-jarkom
+
+unlink /etc/nginx/sites-enabled/default
+ln -s /etc/nginx/sites-available/lb-jarkom /etc/nginx/sites-enabled/default
+service nginx restart
+```
+
+Kemudian untuk melakukan testing, jalankan command berikut pada client : 
+```
+curl -X POST -d '{"username": "username", "password": "password"}' -H "Content-Type: application/json" http://riegel.canyon.A06.com/api/auth/register
+```
+Ketika telah berhasil akan muncul tampilan sebagai berikut :
+
+![15curl](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/d554286b-26c9-4a8f-8163-00e92e537a0e)
+
+Setelah itu jalankan dengan Apache benchmark seperti dibawah ini : 
+```
+ab -n 100 -c 10 -p <(curl -X POST -d '{"username": "username", "password": "password"}' -H "Content-Type: application/json" http://riegel.canyon.A06.com/api/auth/register
+) -T "application/json" http://riegel.canyon.A06.com/api/auth/register
+```
+Apabila telah berhasil akan muncul tampilan sebagai berikut : 
+
+![17apacheregis-awal](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/e6c212b2-2599-41cd-bc1e-b31c844f602e)
+
+![17apcregis-awal](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/d6f7bce2-6776-4bbf-a1fa-13efb2813e01)
+
+
 ## Soal 16
 b. POST /auth/login
 
 ### Penyelesaian soal 16
+
+Untuk melakukan testing, jalankan command dengan menggunakan curl pada client sebagai berikut : 
+```
+curl -X POST -d '{"username": "username", "password": "password"}' -H "Content-Type: application/json" http://riegel.canyon.A06.com/api/auth/login
+```
+Ketika telah berhasil akan muncul tampilan sebagai berikut : 
+
+![16curl](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/01fe3590-e53d-4d68-bf27-272d459d4464)
+
+Setelah itu jalankan dengan Apache benchmark seperti dibawah ini : 
+```
+ab -n 100 -c 10 -p <(curl -X POST -d '{"username": "username", "password": "password"}' -H "Content-Type: application/json" http://riegel.canyon.A06.com/api/auth/login
+) -T "application/json" http://riegel.canyon.A06.com/api/auth/login
+```
+Apabila telah berhasil akan muncul tampilan sebagai berikut : 
+
+![17apachelogin-awal](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/816f69e4-c75e-4918-970a-6cf5a413ad76)
+
+![17apclogin-akhir](https://github.com/yusnaaaaa/Jarkom-Modul-3-A06-2023/assets/114417418/cbf32e65-7f88-471a-9497-a20b6b18c6c7)
 
 ## Soal 17
 c. GET /me
